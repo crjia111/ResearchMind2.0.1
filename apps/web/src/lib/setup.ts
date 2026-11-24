@@ -1,5 +1,5 @@
 // App-lifetime owner of the long-running uv provisioning flows (isolated
-// Jupyter env, science-MCP connectors). This state lived inside SettingsPage
+// Jupyter env and browser sidecars). This state lived inside SettingsPage
 // before, so navigating away — clicking a chat or a history session —
 // unmounted the page, discarded the "setting up…" flags, and (worse) severed
 // the setup-progress listener, making a still-running download look frozen and
@@ -10,7 +10,6 @@ import { getClient, useRuntimeStore } from "./runtime";
 import {
   setupJupyter,
   startJupyter,
-  setupScienceMcp,
   watchSetupProgress,
   agentBrowserBin,
   browserMcpBin,
@@ -18,9 +17,7 @@ import {
   closeAgentBrowser,
   getProxySetting,
   removeConfigEntry,
-  openExternal,
 } from "./tauri";
-import { SCIENCE_CONNECTORS, connectorConfig } from "./scienceConnectors";
 import { BROWSER_MCP_ID, buildBrowserMcpConfig } from "./browser";
 import { toast } from "./toast";
 
@@ -42,8 +39,6 @@ export interface EnableBrowserOptions {
 interface SetupState {
   /** True while the isolated Jupyter env is being provisioned. */
   jupyterBusy: boolean;
-  /** The science connector currently provisioning, by id (null = none). */
-  connectorId: string | null;
   /** Latest live uv output line — reassurance during a hundreds-of-MB download. */
   line: string | null;
   /** True while browser control is being enabled. */
@@ -51,32 +46,11 @@ interface SetupState {
   /** Bumped when any provisioning run finishes, so open pages re-read status. */
   generation: number;
   enableJupyter: () => Promise<void>;
-  enableConnector: (id: string, apiKey?: string) => Promise<void>;
   enableBrowser: (opts: EnableBrowserOptions) => Promise<void>;
-}
-
-/** How long a remote connector's browser sign-in stays worth waiting for —
- *  matches the provider-login window in SettingsPage's own OAuth flow. */
-const MCP_OAUTH_WAIT_MS = 5 * 60 * 1000;
-
-/** Poll `listMcpServers` (already-tested, already-polled-elsewhere) until
- *  `name` reports connected, instead of holding one request open across the
- *  whole login — see `startMcpOAuth`'s doc comment for why. */
-async function waitForMcpConnected(name: string): Promise<boolean> {
-  const deadline = Date.now() + MCP_OAUTH_WAIT_MS;
-  for (;;) {
-    const servers = await getClient()!.listMcpServers().catch(() => []);
-    const status = servers.find((s) => s.name === name)?.status;
-    if (status === "connected") return true;
-    if (status === "failed") return false;
-    if (Date.now() >= deadline) return false;
-    await new Promise((r) => setTimeout(r, 2000));
-  }
 }
 
 export const useSetupStore = create<SetupState>((set, get) => ({
   jupyterBusy: false,
-  connectorId: null,
   line: null,
   browserBusy: false,
   generation: 0,
@@ -103,47 +77,6 @@ export const useSetupStore = create<SetupState>((set, get) => ({
       toast.error(`Jupyter setup failed: ${e instanceof Error ? e.message : String(e)}`);
     } finally {
       set((st) => ({ jupyterBusy: false, line: null, generation: st.generation + 1 }));
-    }
-  },
-
-  enableConnector: async (id, apiKey) => {
-    if (get().connectorId) return; // one connector provisioning at a time
-    const c = SCIENCE_CONNECTORS.find((x) => x.id === id);
-    if (!c) return;
-    set({ connectorId: id, line: null });
-    try {
-      if (c.type === "remote") {
-        // Nothing to install — register the vendor's URL, then send the user
-        // to their browser to sign in. `startMcpOAuth` returns immediately
-        // (see its own doc comment for why we don't hold the request open).
-        await getClient()!.addMcpServer(c.id, connectorConfig(c));
-        try {
-          const { authorizationUrl } = await getClient()!.startMcpOAuth(c.id);
-          set({ line: "Waiting for browser sign-in…" });
-          await openExternal(authorizationUrl);
-          if (!(await waitForMcpConnected(c.id))) {
-            throw new Error("Sign-in did not complete in time");
-          }
-        } catch (e) {
-          // Registration happens BEFORE the sign-in, because OAuth needs a
-          // server to authenticate. Leaving it behind on a failed or abandoned
-          // login would put a connector in the user's config that can never
-          // connect, retried on every sidecar start and shown as failed with
-          // no obvious way back. Undo it, then report the original failure.
-          await removeConfigEntry("mcp", c.id).catch(() => false);
-          throw e;
-        }
-      } else {
-        toast.success(`Setting up ${c.label} — first run downloads a managed Python, please wait…`);
-        const python = await setupScienceMcp(c.pkg);
-        await getClient()!.addMcpServer(c.id, connectorConfig(c, python, apiKey));
-      }
-      toast.success(`${c.label} enabled — the agent can now use it from chat.`);
-      await useRuntimeStore.getState().loadCatalog();
-    } catch (e) {
-      toast.error(`${c.label} setup failed: ${e instanceof Error ? e.message : String(e)}`);
-    } finally {
-      set((st) => ({ connectorId: null, line: null, generation: st.generation + 1 }));
     }
   },
 

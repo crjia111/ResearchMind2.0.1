@@ -1,0 +1,56 @@
+{
+  "operations": {
+    "analyze-paper": {
+      "script": "analyze_paper.py",
+      "profile": "by-input",
+      "resource": "chat"
+    },
+    "download-paper": {
+      "script": "download_paper.py"
+    },
+    "extract-text": {
+      "script": "extract_text.py",
+      "profile": "by-input"
+    },
+    "find-in-text": {
+      "script": "find_in_text.py"
+    },
+    "read-segment": {
+      "script": "read_segment.py"
+    }
+  },
+  "assets": {
+    "chat": [
+      {
+        "name": "qwen2.5-0.5b-instruct-q4_k_m.gguf",
+        "archive": "qwen2.5-0.5b-instruct-q4_k_m.gguf",
+        "url": "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/9217f5db79a29953eb74d5343926648285ec7e67/qwen2.5-0.5b-instruct-q4_k_m.gguf",
+        "sha256": "74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db",
+        "license": "Apache-2.0"
+      }
+    ]
+  },
+  "engines": {
+    "Windows-amd64": {
+      "name": "llama-b5916-bin-win-cpu-x64.zip",
+      "archive": "llama-b5916-bin-win-cpu-x64.zip",
+      "url": "https://github.com/ggml-org/llama.cpp/releases/download/b5916/llama-b5916-bin-win-cpu-x64.zip",
+      "sha256": "b6baf2eae7a6bd53cdeaf132a19c8a7d9eca24cfb02f4089f007e87c50769ded",
+      "license": "MIT"
+    },
+    "Linux-x86_64": {
+      "name": "llama-b5916-bin-ubuntu-x64.zip",
+      "archive": "llama-b5916-bin-ubuntu-x64.zip",
+      "url": "https://github.com/ggml-org/llama.cpp/releases/download/b5916/llama-b5916-bin-ubuntu-x64.zip",
+      "sha256": "95f460fcba9dcda5c7cd0e67dc200d764815bed13d43936f9cb0851420167719",
+      "license": "MIT"
+    },
+    "Darwin-arm64": {
+      "name": "llama-b5916-bin-macos-arm64.zip",
+      "archive": "llama-b5916-bin-macos-arm64.zip",
+      "url": "https://github.com/ggml-org/llama.cpp/releases/download/b5916/llama-b5916-bin-macos-arm64.zip",
+      "sha256": "b23f710753442c5564fff95ebf0eb2ba7cd4d5d7257f9fd99be74c2aaf282b18",
+      "license": "MIT"
+    }
+  }
+}

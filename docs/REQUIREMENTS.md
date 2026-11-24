@@ -407,45 +407,20 @@ competitors.
 
 ### P1-2 · Domain connectors (databases + literature) — 🟡 Partial
 
-- **Evidence.** Connectors are a genuine highlight but *"strong for life sciences,
-  weak elsewhere."* Agents hallucinate dataset names and mismatch coverage when
-  no grounded catalog exists: *"failed to autonomously locate authoritative
-  datasets, instead hallucinating dataset names."* The biggest whitespace is
-  discipline-specific databases outside biology.
-- **Requirement.** Curated one-click MCP connectors, plus a documented
-  bring-your-own path. Provide **executable access paths / catalog metadata** (not
-  just keyword search) so the agent stops inventing datasets. Coverage targets by
-  discipline:
-
-  | Discipline | Connectors | Status |
-  |---|---|---|
-  | Literature (all) | arXiv, PubMed, Crossref, Semantic Scholar; OpenAlex | ✅ shipped (paper-search-mcp) |
-  | Biology | PubMed, trials, variants (biomcp); PDB/UniProt/ChEMBL/ClinVar | 🟡 partial |
-  | Physics/astro | Space weather (`spaceweather-mcp` — NOAA SWPC/NASA DONKI/USGS) ✅ shipped; NASA ADS, SIMBAD, VizieR, MAST/IRSA, Gaia, SDSS/DESI, GWOSC/LIGO next | 🟡 partial |
-  | Chemistry/materials | Materials Project (`mcp-materials-project`) ✅ shipped; PubChem, ChEMBL, ICSD, COD, NIST next | 🟡 partial |
-  | Earth/climate | Open-Meteo weather/climate (`mcp-weather-server`) ✅ + USGS water (`usgs-mcp`) ✅ shipped; NASA Earthdata, Copernicus/Sentinel, CDS/ERA5, NOAA CDO, GEE, ESGF/CMIP6 next | 🟡 partial |
-  | Social science | FRED (`fred-mcp`) ✅ shipped; IPUMS API, ICPSR, OSF, GSS, World Bank next | 🟡 partial |
-
-- **Acceptance.** From chat, query literature (PubMed/arXiv/Crossref) auditable by
-  the reviewer, plus **at least one non-bio domain database per targeted
-  discipline**; the BYO-MCP path is documented and works.
-- **Status.** 🟡 Literature + bio + **five non-bio** connectors ship with
-  one-click Enable (isolated env via bundled uv) + `docs/CONNECT_YOUR_TOOLS.md`,
-  now spanning **all five targeted disciplines** — the acceptance's "≥1 non-bio
-  domain database per targeted discipline" is met: **Materials Project**
-  (`mcp-materials-project`, materials), **FRED** (`fred-mcp`, economics),
-  **Space weather** (`spaceweather-mcp` — NOAA SWPC/NASA DONKI/USGS, physics),
-  **Open-Meteo weather/climate** (`mcp-weather-server`, earth), and **USGS water**
-  (`usgs-mcp`, earth). The catalog carries a discipline chip, a per-connector
-  free-API-key field (passed via the MCP `environment`, never into
-  provenance/logs), and console-script *or* `-m module` launch (resolved next to
-  the managed interpreter, cross-platform). **Every connector is verified by a
-  real MCP `initialize`/`tools/list` stdio handshake in the bundled-uv env
-  before shipping** (spaceweather → 15 tools, open-meteo → 8, usgs → 10; the
-  three no-key ones need no credentials at all) — the discipline that caught two
-  false friends earlier (`astro-mcp` is Airflow, not astronomy; earlier
-  usgs/open-meteo doubts were an inadequate check, now disproven by the real
-  handshake). We integrate existing open-source servers, not reimplement them.
+- **Requirement.** Ship executable literature and materials-science workflows
+  as portable skills. Each workflow must document inputs, data sources, outputs,
+  dependency setup, and evidence limits; scientific lookups must preserve source
+  identifiers and distinguish unavailable sources from negative findings.
+- **Acceptance.** The nine bundled skills can be discovered by the runtime and
+  invoked from chat. Their scripts and pinned dependency locks are packaged with
+  the project, and the documented MCP path remains available for optional
+  user-managed tools.
+- **Status.** ✅ Nine skills are bundled under `runtime/skills/core/`:
+  materials search, crystal generation, structure optimization, phonon analysis,
+  thermal conductivity, literature search, paper analysis, literature knowledge,
+  and research reporting. Their complete source directories are versioned with
+  the project; duplicate curated science-MCP implementations and installers have
+  been removed.
   Gap: the classic astronomy catalogs (NASA ADS, SIMBAD, Gaia, MAST) have no
   pip-installable stdio MCP yet — GitHub-only, would need vendoring; and more
   chem/social DBs (see the table).

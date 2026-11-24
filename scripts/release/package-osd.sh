@@ -60,7 +60,6 @@ copy_resource() {
 
 copy_resource runtime/osd-plugin osd-plugin
 copy_resource runtime/computer computer
-copy_resource runtime/skills/external/ai4s-skills skills
 copy_resource runtime/skills/external/anthropic-skills skills-office
 copy_resource runtime/skills/external/agent-browser skills-agent-browser
 copy_resource runtime/skills/core skills-core

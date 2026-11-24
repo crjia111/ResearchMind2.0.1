@@ -1,0 +1,13 @@
+{
+  "operations": {
+    "recommend-materials": {
+      "script": "recommend_materials.py",
+      "profile": "materials"
+    },
+    "search-materials": {
+      "script": "search_materials.py",
+      "profile": "materials"
+    }
+  },
+  "assets": {}
+}

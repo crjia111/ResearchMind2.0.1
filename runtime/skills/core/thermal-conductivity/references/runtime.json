@@ -1,0 +1,37 @@
+{
+  "operations": {
+    "predict-conductivity": {
+      "script": "predict_conductivity.py",
+      "profile": "crystal",
+      "resource": "kappa"
+    },
+    "setup-models": {
+      "script": "setup_models.py"
+    }
+  },
+  "assets": {
+    "kappa": [
+      {
+        "name": "Bulk modulus (GPa)-pre-trained.pth.tar",
+        "archive": "Bulk modulus (GPa)-pre-trained.pth.tar",
+        "url": "https://raw.githubusercontent.com/Jack-Liu0227/AI4Kappa/de1608c9cae3c934d43324cd01904ffd7e546142/model/Bulk%20modulus%20%28GPa%29-pre-trained.pth.tar",
+        "sha256": "bfc8eb09e819ec307a0420b3b37bae64cac657474ba04a219126adda80a33ea7",
+        "license": "Upstream AI4Kappa terms; local copies supported"
+      },
+      {
+        "name": "Shear modulus (GPa)-pre-trained.pth.tar",
+        "archive": "Shear modulus (GPa)-pre-trained.pth.tar",
+        "url": "https://raw.githubusercontent.com/Jack-Liu0227/AI4Kappa/de1608c9cae3c934d43324cd01904ffd7e546142/model/Shear%20modulus%20%28GPa%29-pre-trained.pth.tar",
+        "sha256": "3a7366e13cc1640d6f06078dd45b5eea14a41c3b081726a1ae09a08734acb83b",
+        "license": "Upstream AI4Kappa terms; local copies supported"
+      },
+      {
+        "name": "atom_init.json",
+        "archive": "atom_init.json",
+        "url": "https://raw.githubusercontent.com/Jack-Liu0227/AI4Kappa/de1608c9cae3c934d43324cd01904ffd7e546142/root_dir/atom_init.json",
+        "sha256": "cb90bd2257dbf8cfc4e6b2b6d4348d4616e8e9680f1339b1461137032e0f1894",
+        "license": "Upstream AI4Kappa terms; local copies supported"
+      }
+    ]
+  }
+}

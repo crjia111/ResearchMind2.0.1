@@ -2,7 +2,7 @@
 //
 // ACP takes MCP servers per SESSION; OpenCode keeps them in its global config.
 // Without the translation below an ACP agent runs with no connectors at all —
-// the science databases the user configured are invisible to it.
+// the MCP servers the user configured are invisible to it.
 import { describe, expect, it } from "vitest";
 import { AcpRuntime, toAcpMcpServers } from "@ai4s/sdk/acp";
 import type { JsonRpcTransport } from "@ai4s/sdk/acp";

@@ -1,0 +1,32 @@
+{
+  "operations": {
+    "calculate-energy": {
+      "script": "calculate_energy.py",
+      "profile": "matter",
+      "resource": "matter"
+    },
+    "relax-structure": {
+      "script": "relax_structure.py",
+      "profile": "matter",
+      "resource": "matter"
+    },
+    "setup-models": {
+      "script": "setup_models.py"
+    },
+    "validate-cif": {
+      "script": "validate_cif.py",
+      "profile": "ase"
+    }
+  },
+  "assets": {
+    "matter": [
+      {
+        "name": "mattersim-v1.0.0-1M.pth",
+        "archive": "mattersim-v1.0.0-1M.pth",
+        "url": "https://raw.githubusercontent.com/microsoft/mattersim/e59b088ee621cafe0df1b399a27299f3e9092ede/pretrained_models/mattersim-v1.0.0-1M.pth",
+        "sha256": "28b0b0b0f13efefee06b47ea4c9105a26bd3e2c8396da193430da96b3b49a8be",
+        "license": "MIT"
+      }
+    ]
+  }
+}

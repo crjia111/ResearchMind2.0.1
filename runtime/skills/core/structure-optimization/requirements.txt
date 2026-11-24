@@ -1,0 +1,10 @@
+mattersim==1.2.2
+torch>=2.6,<2.7
+torchvision>=0.21,<0.22
+torchaudio>=2.6,<2.7
+numpy>=2,<2.3
+ase>=3.23,<4
+phonopy>=2.30,<3
+seekpath>=2.2,<3
+matplotlib>=3.8,<4
+e3nn>=0.5.8,<0.6

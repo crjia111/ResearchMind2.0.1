@@ -26,7 +26,7 @@ AI4S Workbench Desktop
 ├── Agent Runtime: OpenCode (bundled single-binary sidecar)
 ├── Agent Protocol: OpenCode HTTP + SSE API (opencode serve)
 ├── Skills Layer: OpenCode skills/agents + optional third-party scientific skills
-├── MCP Layer: filesystem / paper-search / BioMCP / Zotero / GitHub / custom
+├── MCP Layer: filesystem / custom local or remote servers
 ├── Execution Layer: OpenCode agents/tools + optional Jupyter Kernel Gateway
 ├── Storage: Local workspace + SQLite + JSONL provenance
 └── Packaging: Tauri DMG / APP / NSIS / MSI
@@ -184,10 +184,8 @@ OpenCode has loaded — built-in + project `.opencode/skill/` + user config.)
 
 ### 6.4 MCP servers
 
-First batch: `filesystem` (project files), `paper-search-mcp` (literature), `BioMCP`
-(biomedical databases), `Zotero MCP` (library), `GitHub MCP` (repos/issues/releases),
-`local runtime MCP` (execution status). v1 ships filesystem + paper search first;
-BioMCP and Zotero follow.
+Scientific workflows are packaged as skills. MCP remains an optional extension
+point for filesystem, laboratory, library, or other user-managed services.
 
 ## 7. Execution layer
 

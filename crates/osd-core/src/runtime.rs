@@ -441,10 +441,10 @@ fn credential_body(provider: &str, entry: &serde_json::Value, oauth_method: Opti
     }))
 }
 
-/// Deploy the bundled skill packs (Tauri resources) into the app-private
+/// Deploy the bundled skill packs into the local OpenCode profile's
 /// profile's global skills dir (`<xdg-config>/opencode/skills/`), which OpenCode
-/// scans regardless of project detection: `skills/` is the external ai4s-skills
-/// pack, `skills-office/` Anthropic's document skills (docx/pdf/pptx/xlsx),
+/// scans regardless of project detection: `skills-office/` Anthropic's document
+/// skills (docx/pdf/pptx/xlsx),
 /// `skills-agent-browser/` the version-matched official agent-browser skill,
 /// `skills-core/` the first-party skills from `runtime/skills/core`. The
 /// workspace's own `.opencode/skills/` stays reserved for skills the user
@@ -456,12 +456,7 @@ fn deploy_bundled_skills(env: &Env) {
     };
     let mut bundled: std::collections::HashSet<std::ffi::OsString> = std::collections::HashSet::new();
     let mut all_ok = true;
-    for resource in [
-        "skills",
-        "skills-office",
-        "skills-agent-browser",
-        "skills-core",
-    ] {
+    for resource in ["skills-office", "skills-agent-browser", "skills-core"] {
         let Some(src) = env.resource(resource).filter(|p| p.is_dir()) else {
             all_ok = false; // dev run without `fetch-skills.sh` — nothing to deploy
             continue;
@@ -593,6 +588,26 @@ fn deploy_profile_prompts(env: &Env) {
     let Ok(config_home) = xdg_config_home(env) else {
         return;
     };
+    // These specialist agents duplicated the workflows now provided by the
+    // first-party skills. Remove their app-managed prompts from existing profiles.
+    let legacy_agents = config_home.join("opencode").join("agent");
+    let legacy_signatures = [
+        ("database.md", "You are ResearchMind's materials-database specialist."),
+        ("deep-research.md", "You are ResearchMind's literature-research specialist."),
+        ("experiment-planner.md", "You are ResearchMind's experimental-planning specialist."),
+        ("simulation.md", "You are ResearchMind's materials-simulation specialist."),
+    ];
+    for (name, signature) in legacy_signatures {
+        let path = legacy_agents.join(name);
+        let is_legacy = std::fs::read_to_string(&path)
+            .map(|text| text.contains(signature))
+            .unwrap_or(false);
+        if is_legacy {
+            if let Err(e) = std::fs::remove_file(&path) {
+                eprintln!("failed to remove obsolete agent prompt {}: {e}", path.display());
+            }
+        }
+    }
     for (resource, dir) in PROFILE_PROMPTS {
         let Some(src) = env.resource(resource).filter(|p| p.is_dir()) else {
             continue; // dev run without the bundled resources
@@ -3413,7 +3428,7 @@ pub fn get_mirror_setting(env: &Env) -> Result<serde_json::Value, String> {
 }
 
 /// Persist the uv mirrors. Blank fields clear that mirror. No sidecar restart:
-/// only the next provisioning run (Jupyter / science MCP) reads them.
+/// only the next provisioning run (Jupyter or a skill dependency setup) reads them.
 pub fn set_mirror_setting(env: &Env, pypi: String, python: String) -> Result<(), String> {
     let (pypi, python) = (pypi.trim(), python.trim());
     let mut lines = Vec::new();

@@ -76,9 +76,10 @@ notebooks, files, figures, reports, runs, and review into one auditable workflow
 exploration, literature survey, hypothesis, experiment code, analysis, figures, and
 write-up, in one continuous, auditable session.
 
-- **Autonomous research agents** — the bundled `ai4s-agent` chains specialist skills
-  end to end (explore → survey → experiment → write), and each stage drops a real,
-  inspectable artifact into your workspace, not just a chat reply.
+- **Materials and literature skills** — nine executable skills cover materials
+  discovery, crystal generation, structure optimization, phonons, thermal
+  conductivity, paper search and analysis, literature indexing, and evidence-based
+  reporting. Each skill carries its own scripts and pinned dependency setup.
 - **Everything traces back** — figures, tables, reports, notebooks, and run outputs
   link to the exact code, inputs, environment, model output, and conversation that
   produced them.
@@ -104,7 +105,7 @@ write-up, in one continuous, auditable session.
   long conversation compacts itself as it approaches the model's context window.
 - **Work several threads at once** — tile panes side by side, keep independent
   Screens, and give each pane its own model.
-- **Extensible** — agent skills, MCP servers and one-click science connectors,
+- **Extensible** — agent skills, MCP servers,
   `/` commands, `!` shell mode, and a model-agnostic SDK.
 
 ## See it in action
@@ -151,22 +152,20 @@ at your desk and read the finished figure and report on your phone.
 
 ## Current capabilities
 
-**The research loop, as skills.** One meta-skill runs the full pipeline; each stage
-is a self-contained skill that produces a real, gradeable artifact — runnable on any
-model OpenCode supports:
+**Materials science and literature research.** Each skill provides an explicit
+workflow and executable tools for its domain:
 
 | Skill | Role | Primary output |
 | --- | --- | --- |
-| `ai4s-agent` | Runs the four skills below, in order | The full research package |
-| `research-explorer` | Turn a broad direction into concrete topics | `research_exploration.md`, `topic_matrix.md`, `literature_pre_survey.md` |
-| `literature-survey` | Write a literature survey | 6–20 pp PDF, 60+ real citations, LaTeX source, taxonomy figures |
-| `experiment-suite` | Build an experiment package | Design doc, runnable code, `results.json` with provenance, figures, report |
-| `paper-writer` | Write a research paper | 8–14 pp PDF, 200+ citations, 4–8 figures, tables |
-| `mindmap-render` | Render a mindmap | Image generated from a `topic_matrix.md` |
-| `integrity-auditor` | Audit a paper's integrity | Image / numerical / logical findings, 4-level evidence grading, `audit_report.md` |
-
-These ship in the `ai4s-skills` pack alongside first-party review skills and the
-office/document skills below.
+| `materials-search` | Search materials databases and export sourced records/CIFs | `materials.json`, CIF files |
+| `crystal-generation` | Generate candidate crystals and validate CIF structures | `generation.json`, candidate CIFs |
+| `structure-optimization` | Calculate energy/forces and relax structures | `energy.json`, `relaxed.cif` |
+| `phonon-analysis` | Calculate phonon dispersion from CIF | `dispersion.csv`, `dispersion.png` |
+| `thermal-conductivity` | Predict 300 K lattice thermal conductivity | `thermal_conductivity.json`, CSV |
+| `literature-search` | Search, import, filter and export paper lists | `papers.json`, `papers.csv` |
+| `paper-analysis` | Extract and analyze paper evidence | `analysis.md`, structured evidence |
+| `literature-knowledge` | Build and query a local paper index | Persistent index and sourced matches |
+| `research-report` | Write a report grounded in selected papers | `report.md`, `report.json` |
 
 ### Platform
 
@@ -197,28 +196,21 @@ office/document skills below.
 
 ## Skills and connectors
 
-Bundled skills are fetched for builds and releases instead of being committed into
-git history:
+Third-party skills are fetched for builds and releases:
 
-- `ai4s-skills` pack from `ai4s-research/ai4s-skills`.
+- Nine first-party materials-science and literature skills in `runtime/skills/core/`,
+  committed with the project.
 - Office/document skills from the Apache-2.0 `anthropics/skills` repository:
   `docx`, `pdf`, `pptx`, and `xlsx`.
 - First-party core skills in `runtime/skills/core/`:
   `traceability-review`, `stats-integrity`, `domain-check`, `large-file`,
   `publication-figures`, `remote-compute`, and `modal-run`.
 
-One-click science MCP connectors currently include:
-
-- Literature search: arXiv, PubMed, Crossref, Semantic Scholar, bioRxiv/medRxiv.
-- Biomedical databases: PubMed, ClinicalTrials.gov, MyVariant/ClinVar.
-- Materials Project.
-- FRED economic data.
-- Space weather.
-- Open-Meteo weather and climate.
-- USGS water data.
-
-You can also add any local or remote MCP server from Settings. See
-[`docs/CONNECT_YOUR_TOOLS.md`](./docs/CONNECT_YOUR_TOOLS.md).
+You can add any local or remote MCP server from Settings. Scientific workflows
+previously exposed through dedicated database connectors are now provided by
+the bundled skills and their local scripts. See
+[`docs/CONNECT_YOUR_TOOLS.md`](./docs/CONNECT_YOUR_TOOLS.md) for optional MCP
+configuration.
 
 ## Install
 

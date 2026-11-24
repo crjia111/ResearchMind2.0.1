@@ -81,7 +81,6 @@ import { MemoryCard } from "@/components/settings/MemoryCard";
 import { Row, Section, Switch } from "@/components/settings/Section";
 import { isDesktopOnlySection, resolveSection } from "@/components/settings/sections";
 import { chipCls, inputCls, selectCls } from "@/components/settings/inputCls";
-import { SCIENCE_CONNECTORS } from "@/lib/scienceConnectors";
 import {
   BROWSER_MCP_ID,
   BROWSER_DISPLAY_NAMES,
@@ -218,7 +217,6 @@ function SettingsPageContent() {
   // Long-running uv provisioning lives in a store, not here: navigating away
   // must not discard the "setting up…" state or sever the progress stream.
   const jupyterBusy = useSetupStore((s) => s.jupyterBusy);
-  const enablingConnector = useSetupStore((s) => s.connectorId);
   const browserBusy = useSetupStore((s) => s.browserBusy);
   const setupLine = useSetupStore((s) => s.line);
   const setupGeneration = useSetupStore((s) => s.generation);
@@ -245,9 +243,6 @@ function SettingsPageContent() {
   const [pyInfo, setPyInfo] = useState<PythonInterpreter | null>(null);
   const [pyPath, setPyPath] = useState("");
   const [savingPy, setSavingPy] = useState(false);
-  // API keys typed for key-requiring connectors, keyed by connector id.
-  const [connectorKeys, setConnectorKeys] = useState<Record<string, string>>({});
-
   // Add-MCP-server form.
   const [mName, setMName] = useState("");
   const [mType, setMType] = useState<"local" | "remote">("local");
@@ -467,8 +462,8 @@ function SettingsPageContent() {
   // HTTP(S) only: the Bun inside OpenCode fails every fetch on a SOCKS proxy.
   const validProxyUrl = /^https?:\/\/\S+:\d+\/?$/i.test(proxyUrlInput.trim());
 
-  // uv download mirrors, used only when provisioning Python tools (Jupyter,
-  // science databases). Optional; a blank field clears that mirror.
+  // uv mirrors, used by Jupyter setup and skill dependency installation.
+  // Optional; a blank field clears that mirror.
   const [mirror, setMirror] = useState<MirrorSetting | null>(null);
   const [pypiInput, setPypiInput] = useState("");
   const [pythonInput, setPythonInput] = useState("");
@@ -822,15 +817,6 @@ function SettingsPageContent() {
       setMName("");
       setMTarget("");
     });
-
-  // The provisioning flows themselves live in the setup store so they outlive
-  // this page. The connector's API key is dropped from UI state up front — the
-  // store already holds the value it needs, so it never lingers here.
-  const enableConnector = (id: string) => {
-    const key = connectorKeys[id];
-    setConnectorKeys((k) => ({ ...k, [id]: "" }));
-    void useSetupStore.getState().enableConnector(id, key);
-  };
 
   const enableBrowserControl = () => {
     const useSystemChrome = browserProfile !== PRIVATE_BROWSER;
@@ -1570,81 +1556,6 @@ function SettingsPageContent() {
             <p className="px-4 py-3 text-[13px] text-muted">{t("mcp.connectPrompt")}</p>
           ) : (
             <div>
-              {/* Curated open-source science connectors — one-click enable. */}
-              {isTauri &&
-                SCIENCE_CONNECTORS.filter((c) => !mcpServers.some((s) => s.name === c.id)).map(
-                  (c) => {
-                    // Only a local connector takes an API key — narrow once so the
-                    // rest of this card can read plain optional fields either way.
-                    const apiKeyEnv = c.type === "remote" ? undefined : c.apiKeyEnv;
-                    const apiKeyUrl = c.type === "remote" ? undefined : c.apiKeyUrl;
-                    const apiKeyRequired = c.type === "remote" ? false : c.apiKeyRequired;
-                    const installNote = c.type === "remote" ? undefined : c.installNote;
-                    const keyMissing = Boolean(apiKeyEnv) && !connectorKeys[c.id]?.trim();
-                    return (
-                      <div
-                        key={c.id}
-                        className="border-b border-faint bg-surface px-3 py-2.5 text-[13px]"
-                      >
-                        <div className="flex items-center gap-2.5">
-                          <Search size={14} className="shrink-0 text-muted" />
-                          <div className="min-w-0 flex-1">
-                            <span className="font-medium text-text">{c.label}</span>
-                            <span className="ml-2 rounded bg-surface-2 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-muted ring-1 ring-border">
-                              {c.discipline}
-                            </span>
-                            <span className="ml-1.5 rounded bg-surface-2 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-muted ring-1 ring-border">
-                              {c.type === "remote" ? t("mcp.official") : t("mcp.openSource")}
-                            </span>
-                            <div className="truncate text-xs text-muted">{c.description}</div>
-                            <div className="truncate font-mono text-[11px] text-muted/70">
-                              {c.source}
-                              {installNote ? ` · ${installNote}` : ""}
-                            </div>
-                          </div>
-                          <button
-                            className={btnAccent("h-8")}
-                            onClick={() => void enableConnector(c.id)}
-                            disabled={enablingConnector !== null || busy || keyMissing}
-                            title={keyMissing ? t("mcp.enterKeyFirstTitle") : undefined}
-                          >
-                            {enablingConnector === c.id ? (
-                              <>
-                                <Loader2 size={12} className="animate-spin" /> {t("mcp.settingUp")}
-                              </>
-                            ) : (
-                              t("mcp.enable")
-                            )}
-                          </button>
-                        </div>
-                        {apiKeyEnv && (
-                          <div className="mt-2 flex items-center gap-2 pl-6">
-                            <input
-                              type="password"
-                              value={connectorKeys[c.id] ?? ""}
-                              onChange={(e) =>
-                                setConnectorKeys((k) => ({ ...k, [c.id]: e.target.value }))
-                              }
-                              placeholder={`${apiKeyEnv} ${apiKeyRequired ? t("mcp.requiredSuffix") : t("mcp.freeKeySuffix")}`}
-                              className="h-8 min-w-0 flex-1 rounded-input border border-transparent bg-surface-2 px-2 font-mono text-[12px] text-text outline-none placeholder:text-muted/60 focus:border-accent/55 focus:bg-surface"
-                            />
-                            {apiKeyUrl && (
-                              <a
-                                href={apiKeyUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="inline-flex items-center gap-1 whitespace-nowrap text-[11px] text-accent hover:underline"
-                              >
-                                <ExternalLink size={11} />{" "}
-                                {apiKeyRequired ? t("mcp.learnMore") : t("mcp.getFreeKey")}
-                              </a>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  },
-                )}
               {/* Featured: one-click Jupyter (shown until its MCP entry exists). */}
               {isTauri && !mcpServers.some((s) => s.name === "jupyter") && (
                 <div className="flex items-center gap-2.5 border-b border-faint bg-surface px-3 py-2.5 text-[13px]">
@@ -1674,7 +1585,7 @@ function SettingsPageContent() {
               )}
               {/* Live uv output while a provisioning run is in flight — a
                   300 MB download must never look like a frozen spinner. */}
-              {(jupyterBusy || enablingConnector !== null) && (
+              {jupyterBusy && (
                 <div className="flex items-center gap-2 border-b border-faint bg-surface-2/50 px-3 py-1.5">
                   <Loader2 size={11} className="shrink-0 animate-spin text-muted" />
                   <span className="truncate font-mono text-[11px] text-muted">

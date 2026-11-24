@@ -348,7 +348,7 @@ discussion. Shipped versions are kept here as the delivery record.
 - **v0.1.x Desktop MVP → hardening** — macOS / Windows / Linux installers, local
   workspace, bundled OpenCode runtime, model config, agent chat, plan approval,
   Python analysis, artifact panel, `provenance.jsonl`, notebooks (Python + R),
-  science MCP connectors, remote compute (SSH / Slurm / Modal), projects,
+  scientific skills, remote compute (SSH / Slurm / Modal), projects,
   searchable model browser, network proxy + mirrors, 7 UI languages.
 - **v0.2.0 UI & reliability** — three themes (light / warm / dark) with per-theme
   accents, translucent macOS sidebar, Codex-style settings (section routes +

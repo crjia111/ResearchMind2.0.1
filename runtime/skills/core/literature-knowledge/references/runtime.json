@@ -1,0 +1,48 @@
+{
+  "operations": {
+    "index-papers": {
+      "script": "index_papers.py",
+      "profile": "chroma",
+      "resource": "embedding"
+    },
+    "search-knowledge": {
+      "script": "search_knowledge.py",
+      "profile": "chroma",
+      "resource": "embedding"
+    }
+  },
+  "assets": {
+    "embedding": [
+      {
+        "name": "Qwen3-Embedding-0.6B-Q8_0.gguf",
+        "archive": "Qwen3-Embedding-0.6B-Q8_0.gguf",
+        "url": "https://huggingface.co/Qwen/Qwen3-Embedding-0.6B-GGUF/resolve/370f27d7550e0def9b39c1f16d3fbaa13aa67728/Qwen3-Embedding-0.6B-Q8_0.gguf",
+        "sha256": "06507c7b42688469c4e7298b0a1e16deff06caf291cf0a5b278c308249c3e439",
+        "license": "Apache-2.0"
+      }
+    ]
+  },
+  "engines": {
+    "Windows-amd64": {
+      "name": "llama-b5916-bin-win-cpu-x64.zip",
+      "archive": "llama-b5916-bin-win-cpu-x64.zip",
+      "url": "https://github.com/ggml-org/llama.cpp/releases/download/b5916/llama-b5916-bin-win-cpu-x64.zip",
+      "sha256": "b6baf2eae7a6bd53cdeaf132a19c8a7d9eca24cfb02f4089f007e87c50769ded",
+      "license": "MIT"
+    },
+    "Linux-x86_64": {
+      "name": "llama-b5916-bin-ubuntu-x64.zip",
+      "archive": "llama-b5916-bin-ubuntu-x64.zip",
+      "url": "https://github.com/ggml-org/llama.cpp/releases/download/b5916/llama-b5916-bin-ubuntu-x64.zip",
+      "sha256": "95f460fcba9dcda5c7cd0e67dc200d764815bed13d43936f9cb0851420167719",
+      "license": "MIT"
+    },
+    "Darwin-arm64": {
+      "name": "llama-b5916-bin-macos-arm64.zip",
+      "archive": "llama-b5916-bin-macos-arm64.zip",
+      "url": "https://github.com/ggml-org/llama.cpp/releases/download/b5916/llama-b5916-bin-macos-arm64.zip",
+      "sha256": "b23f710753442c5564fff95ebf0eb2ba7cd4d5d7257f9fd99be74c2aaf282b18",
+      "license": "MIT"
+    }
+  }
+}
